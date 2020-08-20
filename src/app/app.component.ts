@@ -1,10 +1,10 @@
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { TagDatabase, Video } from '../models';
+import { Video } from '../models';
 import { Observable, BehaviorSubject } from 'rxjs';
 
-import { pluck, share, mergeMap, map } from 'rxjs/operators';
+import { mergeMap, map, tap } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatChipInputEvent } from '@angular/material/chips';
@@ -20,27 +20,31 @@ export class AppComponent implements OnInit {
   public separatorKeysCodes: number[] = [ENTER, COMMA];
   public tagCtrl = new FormControl();
 
-  public videos$!: Observable<Video[]>;
+  private videos$!: Observable<Video[]>;
+
+  public tags: string[] = [];
 
   public filteredVideos$ = new BehaviorSubject<Video[]>([]);
 
-  public tags$!: Observable<string[]>;
-
-  public selectedTags$ = new BehaviorSubject<number[]>([]);
+  public selectedTags$ = new BehaviorSubject<string[]>([]);
 
   constructor(http: HttpClient) {
-    const db$ = http.get<TagDatabase>('assets/db.json').pipe(share());
-
-    this.videos$ = db$.pipe(pluck<TagDatabase, Video[]>('videos'));
-
-    this.tags$ = db$.pipe(pluck<TagDatabase, string[]>('tags'));
+    this.videos$ = http.get<Video[]>('assets/db.json').pipe(
+      tap((videos: Video[]) => {
+        const tags = videos.reduce(
+          (tags: string[], video: Video) => [...tags, ...video.tags],
+          []
+        );
+        this.tags = Array.from(new Set(tags));
+      })
+    );
   }
 
   public ngOnInit(): void {
     this.selectedTags$
       .pipe(
-        map((selectedTags: number[]) => new Set(selectedTags)),
-        mergeMap((selectedTagSet: Set<number>) =>
+        map((selectedTags: string[]) => new Set(selectedTags)),
+        mergeMap((selectedTagSet: Set<string>) =>
           this.videos$.pipe(
             map((videos: Video[]) => {
               return videos.filter((video: Video) => {
@@ -60,20 +64,19 @@ export class AppComponent implements OnInit {
   }
 
   public addHandler(event: MatChipInputEvent): void {
-    const tagIdx = Number(event.value);
-    this._add(tagIdx);
+    const tag = event.value;
+    this._add(tag);
   }
 
-  public remove(tagIdx: number): void {
+  public remove(tag: string): void {
     const actualTags = this.selectedTags$.value;
-    const remainingTags = actualTags.filter((t: number) => t !== tagIdx);
+    const remainingTags = actualTags.filter((t: string) => t !== tag);
     this.selectedTags$.next(remainingTags);
   }
 
   public selected(event: MatAutocompleteSelectedEvent): void {
-    console.log(event);
-    const selectedIndex = Number(event.option.value);
-    this._add(selectedIndex);
+    const selectedTag = event.option.value;
+    this._add(selectedTag);
   }
 
   public navigateToPlaylist(): void {
@@ -89,8 +92,8 @@ export class AppComponent implements OnInit {
     window.open(url);
   }
 
-  private _add(tagIdx: number): void {
+  private _add(tag: string): void {
     const actualTags = this.selectedTags$.value;
-    this.selectedTags$.next(Array.from(new Set([...actualTags, tagIdx])));
+    this.selectedTags$.next(Array.from(new Set([...actualTags, tag])));
   }
 }

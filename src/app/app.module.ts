@@ -13,13 +13,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 
-import { TagNamePipe } from './tag-name.pipe';
 import { ReactiveFormsModule } from '@angular/forms';
 import { EditComponent } from './edit/edit.component';
 import { VideoComponent } from './video/video.component';
 
 @NgModule({
-  declarations: [AppComponent, TagNamePipe, EditComponent, VideoComponent],
+  declarations: [AppComponent, EditComponent, VideoComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
