@@ -1,0 +1,52 @@
+<form [formGroup]="addNewForm" id="page-container">
+  <div class="example-container">
+    <mat-form-field appearance="fill">
+      <mat-label>Youtube link</mat-label>
+      <textarea
+        matInput
+        formControlName="link"
+        [cdkTextareaAutosize]="true"
+      ></textarea>
+    </mat-form-field>
+  </div>
+
+  <div id="tag-list">
+    <mat-form-field appearance="fill">
+      <mat-label>Filter tags</mat-label>
+      <input matInput [formControl]="filterForm" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Add new tag</mat-label>
+      <input matInput [formControl]="addTagForm" />
+    </mat-form-field>
+
+    <button type="button" mat-raised-button color="primary" (click)="addTag()">
+      Add tag
+    </button>
+
+    <ng-container formArrayName="tags">
+      <div
+        *ngFor="let tagControl of getTagsArray().controls; let idx = index"
+        [hidden]="checkHidden(tags[idx])"
+      >
+        <mat-checkbox [value]="tags[idx]" [formControlName]="idx">{{
+          tags[idx]
+        }}</mat-checkbox>
+      </div>
+    </ng-container>
+  </div>
+
+  <button mat-raised-button color="primary" (click)="addSong()">
+    Add song
+  </button>
+</form>
+
+<p>
+  Append the result to the
+  <a href="https://gist.github.com/abrhm/ccc924b31201c74037c8033852bfd3be">
+    Gist
+  </a>
+</p>
+
+{{ newSongs | json }}

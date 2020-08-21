@@ -12,13 +12,15 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 import { ReactiveFormsModule } from '@angular/forms';
-import { EditComponent } from './edit/edit.component';
-import { VideoComponent } from './video/video.component';
+import { GenerateNewComponent } from './generate-new/generate-new.component';
+import { ViewComponent } from './view/view.component';
 
 @NgModule({
-  declarations: [AppComponent, EditComponent, VideoComponent],
+  declarations: [AppComponent, GenerateNewComponent, ViewComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -31,6 +33,8 @@ import { VideoComponent } from './video/video.component';
     MatIconModule,
     MatAutocompleteModule,
     MatButtonModule,
+    MatInputModule,
+    MatCheckboxModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
